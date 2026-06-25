@@ -112,6 +112,7 @@
       "target": [
         "nsis"
       ]
-    }
+    },
+    "npmRebuild": false
   }
 }
