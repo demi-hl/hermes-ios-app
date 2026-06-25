@@ -222,7 +222,7 @@ export interface AutomationsPayload {
 
 /** A job header line: `  b2bbc6ee8c88 [active]`. */
 const JOB_HEADER = /^\s*([0-9a-f]{6,})\s+\[(active|paused|disabled)\]\s*$/i;
-/** An indented field line: `    Name:      polymarket-bot-health`. */
+/** An indented field line: `    Name:      my-service`. */
 const FIELD = /^\s+([A-Za-z ]+?):\s+(.*\S)\s*$/;
 
 /** Parse the human `hermes cron list` table into structured jobs. The CLI has

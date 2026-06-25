@@ -15,6 +15,7 @@ import { haptic } from "./haptics";
 import { usePush } from "./usePush";
 import { cn } from "@/lib/utils";
 import { profileTint } from "@/lib/profile-color";
+import { PetSprite, usePet } from "@/lib/pet";
 import { AnimatePresence, motion } from "framer-motion";
 
 /** How long to show a notification before auto-dismiss. */
@@ -50,6 +51,20 @@ export function ContextBar() {
   } = useWorkspace();
 
   const [sheet, setSheet] = useState<"model" | "profile" | null>(null);
+  const { pet } = usePet();
+  const [sessionStart] = useState(() => Date.now());
+  const [sessionNow, setSessionNow] = useState(() => Date.now());
+
+  useEffect(() => {
+    const t = setInterval(() => setSessionNow(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, []);
+
+  const sessSecs = Math.max(0, Math.floor((sessionNow - sessionStart) / 1000));
+  const sessionLabel =
+    sessSecs >= 3600
+      ? `${Math.floor(sessSecs / 3600)}:${String(Math.floor((sessSecs % 3600) / 60)).padStart(2, "0")}:${String(sessSecs % 60).padStart(2, "0")}`
+      : `${Math.floor(sessSecs / 60)}:${String(sessSecs % 60).padStart(2, "0")}`;
 
   const pct = contextUsage
     ? Math.min(100, Math.round((contextUsage.used / contextUsage.total) * 100))
@@ -161,6 +176,18 @@ export function ContextBar() {
                   </span>
                   <ChevronUpDownIcon width={10} height={10} className="text-text-tertiary" />
                 </button>
+
+                <span
+                  className="flex shrink-0 items-center gap-1.5 font-mono-ui tabular text-[0.62rem] text-text-tertiary"
+                  title={pet.enabled ? `${pet.label} · app session uptime` : "app session uptime"}
+                >
+                  <PetSprite
+                    pet={pet}
+                    className={cn("h-4 w-4 shrink-0", pet.enabled && "scale-[1.35]")}
+                    style={{ filter: "drop-shadow(0 0 4px color-mix(in srgb, var(--color-success) 55%, transparent))" }}
+                  />
+                  {sessionLabel}
+                </span>
 
                 {/* Active sessions */}
                 {activeSessions.length > 0 && (

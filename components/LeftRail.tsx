@@ -6,20 +6,18 @@ import {
   CockpitIcon,
   ChatIcon,
   ReposIcon,
-  PolyIcon,
   FleetIcon,
   CloseIcon,
   MenuIcon,
 } from "./Icons";
 import type { ReactNode } from "react";
 
-export type View = "cockpit" | "chat" | "repos" | "polymarket" | "fleet";
+export type View = "cockpit" | "chat" | "repos" | "fleet";
 
 const NAV: { view: View; label: string; icon: ReactNode }[] = [
   { view: "cockpit", label: "Cockpit", icon: <CockpitIcon /> },
   { view: "chat", label: "Chat", icon: <ChatIcon /> },
   { view: "repos", label: "Repos", icon: <ReposIcon /> },
-  { view: "polymarket", label: "Polymarket", icon: <PolyIcon /> },
   { view: "fleet", label: "Fleet", icon: <FleetIcon /> },
 ];
 
@@ -49,9 +47,9 @@ export function LeftRail({
         </span>
         {!collapsed && (
           <div className="min-w-0 leading-tight">
-            <div className="text-[14px] font-bold tracking-wide text-ink">DEMI</div>
+            <div className="text-[14px] font-bold tracking-wide text-ink">Hermes</div>
             <div className="text-[10px] uppercase tracking-[0.2em] text-faint">
-              workspace
+              battlestation
             </div>
           </div>
         )}

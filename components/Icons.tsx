@@ -41,12 +41,6 @@ export const ReposIcon = (p: P) => (
   </svg>
 );
 
-export const PolyIcon = (p: P) => (
-  <svg {...base(p)}>
-    <path d="M3 17l5-6 4 3 5-7 4 5" />
-    <path d="M3 21h18" />
-  </svg>
-);
 
 export const FleetIcon = (p: P) => (
   <svg {...base(p)}>

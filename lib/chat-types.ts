@@ -5,7 +5,7 @@
 /** A repo the chat hub can bind a session to. Derived server-side from the
  *  local git repos under $HOME/projects and $HOME/agent. */
 export interface ChatRepo {
-  /** Repo slug / directory name, e.g. "polymarket-arbitrage-bot". */
+  /** Repo slug / directory name, e.g. "my-repo". */
   name: string;
   /** Absolute path (the cwd for the bound Hermes session). */
   path: string;

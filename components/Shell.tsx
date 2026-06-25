@@ -5,7 +5,6 @@ import clsx from "clsx";
 import { LeftRail, type View } from "./LeftRail";
 import { ChatPane } from "./ChatPane";
 import { MenuIcon } from "./Icons";
-import { PolymarketPanel } from "./panels/PolymarketPanel";
 import { FleetPanel } from "./panels/FleetPanel";
 import { ActiveBuildsPanel } from "./panels/ActiveBuildsPanel";
 import { DecisionLogPanel } from "./panels/DecisionLogPanel";
@@ -40,8 +39,7 @@ export function Shell() {
     }
     setDrawer(false);
     requestAnimationFrame(() => {
-      if (v === "polymarket") focusEl("panel-polymarket");
-      else if (v === "fleet") focusEl("panel-fleet");
+      if (v === "fleet") focusEl("panel-fleet");
     });
   }, []);
 
@@ -59,9 +57,9 @@ export function Shell() {
           <MenuIcon />
         </button>
         <span className="flex h-6 w-6 items-center justify-center rounded-md bg-accent text-[12px] font-black text-bg">
-          D
+          H
         </span>
-        <span className="text-[13px] font-bold tracking-wide text-ink">DEMI</span>
+        <span className="text-[13px] font-bold tracking-wide text-ink">Hermes</span>
         <span className="ml-auto text-[10.5px] uppercase tracking-[0.18em] text-faint">
           {view}
         </span>
@@ -93,7 +91,6 @@ export function Shell() {
 
           {!chatOnly && (
             <aside className="flex flex-col gap-3 p-3 lg:w-[400px] lg:shrink-0 lg:overflow-y-auto lg:border-l lg:border-line xl:w-[440px]">
-              <PolymarketPanel />
               <FleetPanel />
               <ActiveBuildsPanel />
               <DecisionLogPanel />

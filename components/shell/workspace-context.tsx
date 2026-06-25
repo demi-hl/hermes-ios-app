@@ -60,7 +60,7 @@ export interface ContextUsage {
 }
 
 export interface ActiveWorkspace {
-  /** Repo slug, e.g. "polymarket-arbitrage-bot". */
+  /** Repo slug, e.g. "my-repo". */
   repo: string;
   /** Absolute repo path (cwd for the bound Hermes session). */
   path?: string;

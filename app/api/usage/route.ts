@@ -7,11 +7,15 @@ export const dynamic = "force-dynamic";
 
 const HOME = process.env.HOME ?? homedir();
 
-// The Anthropic Max/Teams account config dirs Hermes keeps warm on this box.
-// Dir NAMES are historical and can lie about which account they hold, so we
-// read the live uuid/email from each and dedupe by uuid (two dirs sharing one
-// account is a known state). Read-only: this never writes creds or config.
-const ACCOUNT_DIRS = [".claude", ".claude-drainer-b", ".claude-acct-demi2"];
+// The Anthropic Max/Teams account config dirs to scan, relative to $HOME.
+// Set CLAUDE_ACCOUNT_DIRS as a comma-separated list (e.g. ".claude,.claude-work")
+// to surface multiple subscriptions; defaults to the single ".claude" dir.
+// Dir NAMES can lie about which account they hold, so we read the live
+// uuid/email from each and dedupe by uuid. Read-only: never writes creds.
+const ACCOUNT_DIRS = (process.env.CLAUDE_ACCOUNT_DIRS ?? ".claude")
+  .split(",")
+  .map((d) => d.trim())
+  .filter(Boolean);
 
 const USAGE_URL = "https://api.anthropic.com/api/oauth/usage";
 const OAUTH_BETA = "oauth-2025-04-20";
@@ -33,26 +37,35 @@ interface SubRow {
   status: "ok" | "rate_limited" | "dead" | "no_token";
 }
 
-// Stable display nicknames keyed by account uuid prefix (uuid is truth; the
-// config dir names lie about which account they hold). Lets the cards read
-// "DEMI 1/2/3" instead of raw emails.
-const NICK_BY_UUID8: Record<string, string> = {
-  "0d1ce3d5": "DEMI 1",
-  "0ea64448": "DEMI 2",
-  caf21a84: "DEMI 3",
-};
+// Optional display nicknames keyed by account uuid prefix (first 8 chars).
+// Set CLAUDE_ACCOUNT_NICKS to a JSON object, e.g. {"<uuid8>":"Main"}, to label
+// the cards; otherwise they fall back to the account email or dir name.
+function parseNicks(): Record<string, string> {
+  try {
+    return JSON.parse(process.env.CLAUDE_ACCOUNT_NICKS ?? "{}") as Record<string, string>;
+  } catch {
+    return {};
+  }
+}
+const NICK_BY_UUID8: Record<string, string> = parseNicks();
 
-// Confirmed-true plan, keyed by uuid. The on-disk `rateLimitTier` /
+// Optional plan override, keyed by uuid prefix. The on-disk `rateLimitTier` /
 // `subscriptionType` are a LOGIN-TIME snapshot — they do NOT update on silent
-// token refresh, and the usage API exposes no tier field, so an account
-// upgraded after its last full login reads stale. christophergervais92
-// (DEMI 1) shows "Max plan" in Claude's own billing (verified 2026-06-20) but
-// its box token still reports team/5x. We override only where we have ground
-// truth; everything else falls through to the live token value. Update on a
-// real plan change (or after a full re-login rewrites the cred).
-const TIER_OVERRIDE: Record<string, { sub: string; tier: string }> = {
-  "0d1ce3d5": { sub: "max", tier: "default_claude_max_20x" }, // DEMI 1 main, billing = Max
-};
+// token refresh, so an account upgraded after its last full login can read
+// stale. Set CLAUDE_TIER_OVERRIDE to a JSON object, e.g.
+// {"<uuid8>":{"sub":"max","tier":"default_claude_max_20x"}}, to pin the truth;
+// everything else falls through to the live token value.
+function parseTierOverride(): Record<string, { sub: string; tier: string }> {
+  try {
+    return JSON.parse(process.env.CLAUDE_TIER_OVERRIDE ?? "{}") as Record<
+      string,
+      { sub: string; tier: string }
+    >;
+  } catch {
+    return {};
+  }
+}
+const TIER_OVERRIDE: Record<string, { sub: string; tier: string }> = parseTierOverride();
 
 // A non-Anthropic OAuth provider (Codex/ChatGPT, Grok/xAI). These auth via a
 // consumer plan that exposes NO usage/limit endpoint, so we surface connection

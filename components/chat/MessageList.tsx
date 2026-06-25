@@ -3,6 +3,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Markdown } from "./markdown";
+import { TextActions } from "./MessageActions";
 import type { ChatMessage } from "./useChat";
 import type { ChatThread } from "@/lib/chat-types";
 import { cn } from "@/lib/utils";
@@ -75,14 +76,17 @@ export function MessageList({
           <motion.div
             key={m.id}
             layout
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+            initial={{ opacity: 0, y: 10, scale: 0.992, filter: "blur(3px)" }}
+            animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+            transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
             className={cn("flex", m.role === "user" ? "justify-end" : "justify-start")}
           >
             {m.role === "user" ? (
-              <div className="max-w-[86%] rounded-[calc(var(--theme-radius)+4px)] rounded-br-md border border-border bg-[color-mix(in_srgb,var(--midground)_8%,transparent)] px-3.5 py-2 text-[0.92rem] leading-relaxed text-text-primary">
-                {m.text}
+              <div className="flex max-w-[86%] flex-col items-end gap-1">
+                <div className="rounded-[calc(var(--theme-radius)+4px)] rounded-br-md border border-border bg-[color-mix(in_srgb,var(--midground)_8%,transparent)] px-3.5 py-2 text-[0.92rem] leading-relaxed text-text-primary">
+                  {m.text}
+                </div>
+                <TextActions text={m.text} align="right" className="-mt-0.5" />
               </div>
             ) : (
               <AssistantBubble m={m} />
@@ -144,7 +148,16 @@ function AssistantBubble({ m }: { m: ChatMessage }) {
           {m.text || "the turn failed"}
         </div>
       ) : (
-        hasText && <Markdown text={m.text} />
+        hasText && (
+          <motion.div
+            initial={{ opacity: 0.92 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.16 }}
+          >
+            <Markdown text={m.text} pending={!!m.pending} />
+            {!m.pending && <TextActions text={m.text} className="mt-2" />}
+          </motion.div>
+        )
       )}
       {m.note && !m.error && (
         <p className="mt-1.5 text-[0.7rem] text-text-tertiary">{m.note}</p>
