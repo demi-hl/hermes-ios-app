@@ -39,9 +39,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Rebuild native addons for Electron
-        run: npm run electron:rebuild
-
       - name: Build installer
         run: npm run dist:${{ matrix.platform }}
         env:
